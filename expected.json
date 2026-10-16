@@ -1,0 +1,246 @@
+[
+ {
+  "fn": "jouleTruth",
+  "args": [
+   2000,
+   30,
+   50
+  ],
+  "out": "2000 joules on the box against 30 absorbed spikes of 50 joules each leaves 500.0 joules honestly."
+ },
+ {
+  "fn": "jouleTruth",
+  "args": [
+   1000,
+   25,
+   50
+  ],
+  "out": "1000 joules on the box against 25 absorbed spikes of 50 joules each runs 250.0 joules past the rating honestly."
+ },
+ {
+  "fn": "jouleTruth",
+  "args": [
+   1500,
+   30,
+   50
+  ],
+  "out": "1500 joules on the box against 30 absorbed spikes of 50 joules each spends the rating exactly honestly."
+ },
+ {
+  "fn": "jouleTruth",
+  "args": [
+   2000,
+   0,
+   50
+  ],
+  "out": "2000 joules on the box against 0 absorbed spikes of 50 joules each leaves 2000.0 joules honestly."
+ },
+ {
+  "fn": "jouleTruth",
+  "args": [
+   3000,
+   40,
+   60
+  ],
+  "out": "3000 joules on the box against 40 absorbed spikes of 60 joules each leaves 600.0 joules honestly."
+ },
+ {
+  "fn": "jouleTruth",
+  "args": [
+   500,
+   12,
+   50
+  ],
+  "out": "500 joules on the box against 12 absorbed spikes of 50 joules each runs 100.0 joules past the rating honestly."
+ },
+ {
+  "fn": "jouleTruth",
+  "args": [
+   2000,
+   1,
+   50
+  ],
+  "out": "2000 joules on the box against 1 absorbed spike of 50 joules each leaves 1950.0 joules honestly."
+ },
+ {
+  "fn": "jouleTruth",
+  "args": [
+   0,
+   30,
+   50
+  ],
+  "err": "the joule rating must be above zero"
+ },
+ {
+  "fn": "jouleTruth",
+  "args": [
+   2000,
+   -1,
+   50
+  ],
+  "err": "the spikes must be zero or more"
+ },
+ {
+  "fn": "jouleTruth",
+  "args": [
+   2000,
+   30,
+   0
+  ],
+  "err": "the average spike must be above zero"
+ },
+ {
+  "fn": "clampTruth",
+  "args": [
+   330,
+   120
+  ],
+  "out": "A 330-volt clamp on a 120-volt line lets 210.0 volts past before it starts fighting honestly."
+ },
+ {
+  "fn": "clampTruth",
+  "args": [
+   400,
+   230
+  ],
+  "out": "A 400-volt clamp on a 230-volt line lets 170.0 volts past before it starts fighting honestly."
+ },
+ {
+  "fn": "clampTruth",
+  "args": [
+   500,
+   120
+  ],
+  "out": "A 500-volt clamp on a 120-volt line lets 380.0 volts past before it starts fighting honestly."
+ },
+ {
+  "fn": "clampTruth",
+  "args": [
+   330,
+   230
+  ],
+  "out": "A 330-volt clamp on a 230-volt line lets 100.0 volts past before it starts fighting honestly."
+ },
+ {
+  "fn": "clampTruth",
+  "args": [
+   600,
+   120
+  ],
+  "out": "A 600-volt clamp on a 120-volt line lets 480.0 volts past before it starts fighting honestly."
+ },
+ {
+  "fn": "clampTruth",
+  "args": [
+   110,
+   230
+  ],
+  "out": "A 110-volt clamp on a 230-volt line sits 120.0 volts under the line - it never stops fighting honestly."
+ },
+ {
+  "fn": "clampTruth",
+  "args": [
+   0,
+   120
+  ],
+  "err": "the clamp rating must be above zero"
+ },
+ {
+  "fn": "clampTruth",
+  "args": [
+   330,
+   0
+  ],
+  "err": "the line voltage must be above zero"
+ },
+ {
+  "fn": "loadTruth",
+  "args": [
+   1700,
+   15,
+   120
+  ],
+  "out": "1700 watts plugged into a 15-amp, 120-volt strip with an honest 1440.0 watts runs 260.0 watts over honestly."
+ },
+ {
+  "fn": "loadTruth",
+  "args": [
+   1000,
+   15,
+   120
+  ],
+  "out": "1000 watts plugged into a 15-amp, 120-volt strip with an honest 1440.0 watts leaves 440.0 watts of headroom honestly."
+ },
+ {
+  "fn": "loadTruth",
+  "args": [
+   1440,
+   15,
+   120
+  ],
+  "out": "1440 watts plugged into a 15-amp, 120-volt strip with an honest 1440.0 watts sits exactly at the honest limit honestly."
+ },
+ {
+  "fn": "loadTruth",
+  "args": [
+   300,
+   15,
+   230
+  ],
+  "out": "300 watts plugged into a 15-amp, 230-volt strip with an honest 2760.0 watts leaves 2460.0 watts of headroom honestly."
+ },
+ {
+  "fn": "loadTruth",
+  "args": [
+   2000,
+   10,
+   120
+  ],
+  "out": "2000 watts plugged into a 10-amp, 120-volt strip with an honest 960.0 watts runs 1040.0 watts over honestly."
+ },
+ {
+  "fn": "loadTruth",
+  "args": [
+   720,
+   15,
+   120
+  ],
+  "out": "720 watts plugged into a 15-amp, 120-volt strip with an honest 1440.0 watts leaves 720.0 watts of headroom honestly."
+ },
+ {
+  "fn": "loadTruth",
+  "args": [
+   1800,
+   15,
+   120
+  ],
+  "out": "1800 watts plugged into a 15-amp, 120-volt strip with an honest 1440.0 watts runs 360.0 watts over honestly."
+ },
+ {
+  "fn": "loadTruth",
+  "args": [
+   0,
+   15,
+   120
+  ],
+  "err": "the plugged-in watts must be above zero"
+ },
+ {
+  "fn": "loadTruth",
+  "args": [
+   1700,
+   0,
+   120
+  ],
+  "err": "the strip amps must be above zero"
+ },
+ {
+  "fn": "loadTruth",
+  "args": [
+   1700,
+   15,
+   -5
+  ],
+  "err": "the line voltage must be above zero"
+ }
+]
