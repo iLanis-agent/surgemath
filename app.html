@@ -14,8 +14,9 @@
   .boundary strong { display:block; margin-bottom:.3rem; }
   .panel { background:var(--soft); border-left:5px solid var(--accent); border-radius:6px; padding:1rem 1.1rem; margin-bottom:1.1rem; }
   h2 { font-size:1.1rem; margin-bottom:.6rem; }
+  p.note { font-size:.9rem; margin-bottom:.4rem; }
   label { display:block; font-size:.9rem; margin:.45rem 0 .1rem; }
-  input, select { width:100%; padding:.45rem .55rem; font-size:1rem; border:1px solid #c9bfa6; border-radius:6px; background:#fff; color:var(--ink); }
+  input { width:100%; padding:.45rem .55rem; font-size:1rem; border:1px solid #c9bfa6; border-radius:6px; background:#fff; color:var(--ink); }
   .out { margin-top:.7rem; font-size:.98rem; background:#fff; border:1px dashed #c9bfa6; border-radius:6px; padding:.6rem .7rem; min-height:2.4rem; }
   .out.err { border-color:#b03030; color:#8a1f1f; font-style:normal; }
   footer { margin-top:1.8rem; font-size:.85rem; color:#6d6550; }
@@ -27,47 +28,40 @@
   <h1>Surge Math</h1>
   <div class="boundary">
     <strong>Boundary: illustrative arithmetic only</strong>
-    Joule budgets, clamp figures and load math here are labeled norms, not measurements of your protector, your wiring or your devices. A surge protector is sacrificial: replace it on the maker's schedule, follow the maker's rating over anything this page says, and ask an electrician about your wiring.
+    Joule ratings and let-through figures here are nameplate claims printed on the box, not measurements of your protector, your wiring or your devices. Follow the maker's documentation over anything this page says, and ask an electrician about your wiring.
   </div>
 
   <div class="panel">
-    <h2>The joule truth</h2>
-    <label for="j-rating">Joules on the box</label>
-    <input id="j-rating" type="number" min="0" step="1" value="2000">
-    <label for="j-count">Spikes it has absorbed</label>
-    <input id="j-count" type="number" min="0" step="1" value="30">
-    <label for="j-avg">Average joules per spike (labeled norm)</label>
-    <input id="j-avg" type="number" min="0" step="1" value="50">
+    <h2>The rating truth</h2>
+    <p class="note">A joule rating is how much energy the maker says the protector can absorb before it fails. Higher means greater rated capacity.</p>
+    <label for="j-a">Joule rating, box A</label>
+    <input id="j-a" type="number" min="0" step="100" value="2000">
+    <label for="j-b">Joule rating, box B</label>
+    <input id="j-b" type="number" min="0" step="100" value="1000">
     <div class="out" id="j-out"></div>
   </div>
 
   <div class="panel">
     <h2>The clamp truth</h2>
-    <label for="c-clamp">Clamping voltage (V)</label>
-    <input id="c-clamp" type="number" min="0" step="1" value="330">
-    <label for="c-line">Line voltage (V)</label>
-    <select id="c-line">
-      <option value="120" selected>120 (North America)</option>
-      <option value="230">230 (most of the world)</option>
-    </select>
+    <p class="note">The UL 1449 let-through rating is the voltage that can pass through after suppression. Lower means stronger protection.</p>
+    <label for="c-a">Let-through, box A (V)</label>
+    <input id="c-a" type="number" min="0" step="10" value="330">
+    <label for="c-b">Let-through, box B (V)</label>
+    <input id="c-b" type="number" min="0" step="10" value="500">
     <div class="out" id="c-out"></div>
   </div>
 
   <div class="panel">
     <h2>The load truth</h2>
+    <p class="note">Compare only against the rating printed on your own strip.</p>
     <label for="l-watts">Watts plugged in</label>
-    <input id="l-watts" type="number" min="0" step="1" value="1700">
-    <label for="l-amps">Strip rating (amps)</label>
-    <input id="l-amps" type="number" min="0" step="1" value="15">
-    <label for="l-volts">Line voltage (V)</label>
-    <select id="l-volts">
-      <option value="120" selected>120 (North America)</option>
-      <option value="230">230 (most of the world)</option>
-    </select>
+    <input id="l-watts" type="number" min="0" step="50" value="1700">
+    <label for="l-rating">The strip's own rating (watts)</label>
+    <input id="l-rating" type="number" min="0" step="100" value="1800">
     <div class="out" id="l-out"></div>
   </div>
 
-  <footer>Surge Math keeps arithmetic on labeled norms only. <a href="index.html">Why it exists</a>.</footer>
+  <footer>Surge Math compares nameplate claims only. <a href="index.html">Why it exists</a>.</footer>
 </main>
 <script src="engine.js"></script>
 <script>
@@ -86,11 +80,11 @@
   const cOut = document.getElementById("c-out");
   const lOut = document.getElementById("l-out");
   function recalc() {
-    show(jOut, () => jouleTruth(num("j-rating"), num("j-count"), num("j-avg")));
-    show(cOut, () => clampTruth(num("c-clamp"), num("c-line")));
-    show(lOut, () => loadTruth(num("l-watts"), num("l-amps"), num("l-volts")));
+    show(jOut, () => ratingTruth(num("j-a"), num("j-b")));
+    show(cOut, () => clampTruth(num("c-a"), num("c-b")));
+    show(lOut, () => loadTruth(num("l-watts"), num("l-rating")));
   }
-  document.querySelectorAll("input, select").forEach((el) => {
+  document.querySelectorAll("input").forEach((el) => {
     el.addEventListener("input", recalc);
     el.addEventListener("change", recalc);
   });
