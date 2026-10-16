@@ -1,88 +1,73 @@
 import math, json
 
-def plural(n, one, many):
-    return one if n == 1 else many
-
 def tenths(x):
     return math.floor(x * 10 + 0.5) / 10
 
 def fixed1(x):
     return f"{tenths(x):.1f}"
 
-def joule_truth(rating, count, avg):
-    if not (rating > 0):
-        raise ValueError("the joule rating must be above zero")
-    if not (count >= 0):
-        raise ValueError("the spikes must be zero or more")
-    if not (avg > 0):
-        raise ValueError("the average spike must be above zero")
-    left = rating - count * avg
-    if left > 0:
-        verdict = f"leaves {fixed1(left)} joules honestly"
-    elif left < 0:
-        verdict = f"runs {fixed1(-left)} joules past the rating honestly"
-    else:
-        verdict = "spends the rating exactly honestly"
-    return f"{rating} joules on the box against {count} absorbed {plural(count, 'spike', 'spikes')} of {avg} joules each {verdict}."
+def article(n):
+    s = str(n)
+    return "An" if (s.startswith("8") or s.startswith("11") or s.startswith("18")) else "A"
 
-def clamp_truth(clamp, line):
-    if not (clamp > 0):
-        raise ValueError("the clamp rating must be above zero")
-    if not (line > 0):
-        raise ValueError("the line voltage must be above zero")
-    diff = clamp - line
-    if diff > 0:
-        return f"A {clamp}-volt clamp on a {line}-volt line lets {fixed1(diff)} volts past before it starts fighting honestly."
-    return f"A {clamp}-volt clamp on a {line}-volt line sits {fixed1(-diff)} volts under the line - it never stops fighting honestly."
+def rating_truth(a, b):
+    if not (a > 0):
+        raise ValueError("the first joule rating must be above zero")
+    if not (b > 0):
+        raise ValueError("the second joule rating must be above zero")
+    if a == b:
+        return f"{article(a)} {a}-joule rating and a {b}-joule rating carry the same rated capacity honestly."
+    return f"{article(a)} {a}-joule rating is rated to absorb {fixed1(a / b)} times the energy of a {b}-joule rating honestly."
 
-def load_truth(watts, amps, volts):
+def clamp_truth(a, b):
+    if not (a > 0):
+        raise ValueError("the first let-through must be above zero")
+    if not (b > 0):
+        raise ValueError("the second let-through must be above zero")
+    if a == b:
+        return f"{article(a)} {a}-volt let-through and a {b}-volt let-through pass the same voltage honestly."
+    diff = tenths(abs(a - b))
+    dir = "fewer" if a < b else "more"
+    return f"{article(a)} {a}-volt let-through lets {fixed1(diff)} {dir} volts through than a {b}-volt rating honestly."
+
+def load_truth(watts, rating):
     if not (watts > 0):
         raise ValueError("the plugged-in watts must be above zero")
-    if not (amps > 0):
-        raise ValueError("the strip amps must be above zero")
-    if not (volts > 0):
-        raise ValueError("the line voltage must be above zero")
-    honest = amps * volts * 0.8
-    over = watts - honest
-    if over > 0:
-        verdict = f"runs {fixed1(over)} watts over honestly"
-    elif over < 0:
-        verdict = f"leaves {fixed1(-over)} watts of headroom honestly"
-    else:
-        verdict = "sits exactly at the honest limit honestly"
-    return f"{watts} watts plugged into a {amps}-amp, {volts}-volt strip with an honest {fixed1(honest)} watts {verdict}."
+    if not (rating > 0):
+        raise ValueError("the strip's rating must be above zero")
+    diff = tenths(watts - rating)
+    if diff == 0:
+        return f"{watts} watts plugged in matches the strip's own {rating}-watt rating exactly honestly."
+    dir = "under" if diff < 0 else "over"
+    return f"{watts} watts plugged in against the strip's own {rating}-watt rating reads {fixed1(abs(diff))} watts {dir} the rating honestly."
 
-FNS = {"jouleTruth": joule_truth, "clampTruth": clamp_truth, "loadTruth": load_truth}
+FNS = {"ratingTruth": rating_truth, "clampTruth": clamp_truth, "loadTruth": load_truth}
 
 CASES = [
-    ("jouleTruth", [2000, 30, 50]),
-    ("jouleTruth", [1000, 25, 50]),
-    ("jouleTruth", [1500, 30, 50]),
-    ("jouleTruth", [2000, 0, 50]),
-    ("jouleTruth", [3000, 40, 60]),
-    ("jouleTruth", [500, 12, 50]),
-    ("jouleTruth", [2000, 1, 50]),
-    ("jouleTruth", [0, 30, 50]),
-    ("jouleTruth", [2000, -1, 50]),
-    ("jouleTruth", [2000, 30, 0]),
-    ("clampTruth", [330, 120]),
-    ("clampTruth", [400, 230]),
-    ("clampTruth", [500, 120]),
-    ("clampTruth", [330, 230]),
-    ("clampTruth", [600, 120]),
-    ("clampTruth", [110, 230]),
-    ("clampTruth", [0, 120]),
+    ("ratingTruth", [2000, 1000]),
+    ("ratingTruth", [1000, 2000]),
+    ("ratingTruth", [1500, 1500]),
+    ("ratingTruth", [3000, 400]),
+    ("ratingTruth", [300, 600]),
+    ("ratingTruth", [600, 400]),
+    ("ratingTruth", [800, 400]),
+    ("ratingTruth", [0, 1000]),
+    ("ratingTruth", [2000, 0]),
+    ("clampTruth", [330, 500]),
+    ("clampTruth", [500, 330]),
+    ("clampTruth", [400, 400]),
+    ("clampTruth", [330, 400]),
+    ("clampTruth", [330, 331]),
+    ("clampTruth", [0, 500]),
     ("clampTruth", [330, 0]),
-    ("loadTruth", [1700, 15, 120]),
-    ("loadTruth", [1000, 15, 120]),
-    ("loadTruth", [1440, 15, 120]),
-    ("loadTruth", [300, 15, 230]),
-    ("loadTruth", [2000, 10, 120]),
-    ("loadTruth", [720, 15, 120]),
-    ("loadTruth", [1800, 15, 120]),
-    ("loadTruth", [0, 15, 120]),
-    ("loadTruth", [1700, 0, 120]),
-    ("loadTruth", [1700, 15, -5]),
+    ("loadTruth", [1700, 1800]),
+    ("loadTruth", [2000, 1800]),
+    ("loadTruth", [1800, 1800]),
+    ("loadTruth", [450, 1800]),
+    ("loadTruth", [10, 1800]),
+    ("loadTruth", [1850, 1800]),
+    ("loadTruth", [0, 1800]),
+    ("loadTruth", [1700, 0]),
 ]
 
 out = []
@@ -98,4 +83,4 @@ for fn, args in CASES:
 with open("expected.json", "w") as f:
     json.dump(out, f, indent=1)
     f.write("\n")
-print(f"{len(out)} cases written to expected.json")
+print(f"{len(out)} cases written")
