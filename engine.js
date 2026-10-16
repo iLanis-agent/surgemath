@@ -1,44 +1,38 @@
-// Surge Math engine - hypothetical arithmetic on labeled norms only.
-// Joule budgets, clamp figures and load math are labeled norms, not
-// measurements of your protector, your wiring or your devices.
+// Surge Math engine - plain arithmetic on the ratings printed on the box.
+// A joule rating is how much energy the maker says the protector can absorb
+// before it fails. A UL 1449 let-through rating is the voltage that can pass
+// through after suppression; lower means stronger protection. These are
+// nameplate claims to compare, not budgets to count down.
 
-function plural(n, one, many) { return n === 1 ? one : many; }
 function tenths(x) { return Math.floor(x * 10 + 0.5) / 10; }
 function fixed1(x) { return tenths(x).toFixed(1); }
+function article(n) { const s = String(n); return (s.startsWith("8") || s.startsWith("11") || s.startsWith("18")) ? "An" : "A"; }
 
-function jouleTruth(rating, count, avg) {
-  if (!(rating > 0)) throw new Error("the joule rating must be above zero");
-  if (!(count >= 0)) throw new Error("the spikes must be zero or more");
-  if (!(avg > 0)) throw new Error("the average spike must be above zero");
-  const left = rating - count * avg;
-  let verdict;
-  if (left > 0) verdict = `leaves ${fixed1(left)} joules honestly`;
-  else if (left < 0) verdict = `runs ${fixed1(-left)} joules past the rating honestly`;
-  else verdict = "spends the rating exactly honestly";
-  return `${rating} joules on the box against ${count} absorbed ${plural(count, "spike", "spikes")} of ${avg} joules each ${verdict}.`;
+function ratingTruth(a, b) {
+  if (!(a > 0)) throw new Error("the first joule rating must be above zero");
+  if (!(b > 0)) throw new Error("the second joule rating must be above zero");
+  if (a === b) return `${article(a)} ${a}-joule rating and a ${b}-joule rating carry the same rated capacity honestly.`;
+  return `${article(a)} ${a}-joule rating is rated to absorb ${fixed1(a / b)} times the energy of a ${b}-joule rating honestly.`;
 }
 
-function clampTruth(clamp, line) {
-  if (!(clamp > 0)) throw new Error("the clamp rating must be above zero");
-  if (!(line > 0)) throw new Error("the line voltage must be above zero");
-  const diff = clamp - line;
-  if (diff > 0) return `A ${clamp}-volt clamp on a ${line}-volt line lets ${fixed1(diff)} volts past before it starts fighting honestly.`;
-  return `A ${clamp}-volt clamp on a ${line}-volt line sits ${fixed1(-diff)} volts under the line - it never stops fighting honestly.`;
+function clampTruth(a, b) {
+  if (!(a > 0)) throw new Error("the first let-through must be above zero");
+  if (!(b > 0)) throw new Error("the second let-through must be above zero");
+  if (a === b) return `${article(a)} ${a}-volt let-through and a ${b}-volt let-through pass the same voltage honestly.`;
+  const diff = tenths(Math.abs(a - b));
+  const dir = a < b ? "fewer" : "more";
+  return `${article(a)} ${a}-volt let-through lets ${fixed1(diff)} ${dir} volts through than a ${b}-volt rating honestly.`;
 }
 
-function loadTruth(watts, amps, volts) {
+function loadTruth(watts, rating) {
   if (!(watts > 0)) throw new Error("the plugged-in watts must be above zero");
-  if (!(amps > 0)) throw new Error("the strip amps must be above zero");
-  if (!(volts > 0)) throw new Error("the line voltage must be above zero");
-  const honest = amps * volts * 0.8; // labeled norm: 80% continuous derate
-  const over = watts - honest;
-  let verdict;
-  if (over > 0) verdict = `runs ${fixed1(over)} watts over honestly`;
-  else if (over < 0) verdict = `leaves ${fixed1(-over)} watts of headroom honestly`;
-  else verdict = "sits exactly at the honest limit honestly";
-  return `${watts} watts plugged into a ${amps}-amp, ${volts}-volt strip with an honest ${fixed1(honest)} watts ${verdict}.`;
+  if (!(rating > 0)) throw new Error("the strip's rating must be above zero");
+  const diff = tenths(watts - rating);
+  if (diff === 0) return `${watts} watts plugged in matches the strip's own ${rating}-watt rating exactly honestly.`;
+  const dir = diff < 0 ? "under" : "over";
+  return `${watts} watts plugged in against the strip's own ${rating}-watt rating reads ${fixed1(Math.abs(diff))} watts ${dir} the rating honestly.`;
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { jouleTruth, clampTruth, loadTruth };
+  module.exports = { ratingTruth, clampTruth, loadTruth };
 }
